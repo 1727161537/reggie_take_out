@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -55,12 +56,13 @@ public class EmployeeController {
         //登录成功,将员工的id存入session并返回登录成功结果
         HttpSession session = request.getSession();
         session.setAttribute("employee", emp.getId());
-        session.setMaxInactiveInterval(1000*60*60);
+        session.setMaxInactiveInterval(1000 * 60 * 60);
         return R.success(emp);
     }
 
     /**
      * 退出登录
+     *
      * @param request
      * @return
      */
@@ -71,4 +73,22 @@ public class EmployeeController {
         session.removeAttribute("employee");
         return R.success("退出成功！");
     }
+
+    @PostMapping
+    public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
+        //设置初始密码123456,需要进行md5加密
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        //设置员工的创建时间和更新时间
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        //设置员工的创建人
+        //获取当前登录用户的id
+        Long employeeID = (Long) request.getSession().getAttribute("employee");
+        employee.setCreateUser(employeeID);
+        employee.setUpdateUser(employeeID);
+        //调用service层的方法,来保存数据
+        employeeService.save(employee);
+        return R.success("新增员工成功");
+    }
+
 }
