@@ -112,4 +112,41 @@ public class EmployeeController {
         employeeService.page(pageInfo, wrapper);
         return R.success(pageInfo);
     }
+
+    /**
+     * 通用修改功能
+     * 1.修改用户的状态
+     * 2.修改用户的信息
+     *
+     * @param employee
+     * @return
+     */
+    @PutMapping
+    public R<String> update(@RequestBody Employee employee, HttpServletRequest request) {
+        //获取当前用户的id
+        Long employeeId = (Long) request.getSession().getAttribute("employee");
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser(employeeId);
+        //修改employee的数据
+        employeeService.updateById(employee);
+        //返回结果
+        return R.success("员工信息修改成功!");
+    }
+
+    /**
+     * 根据id查询员工
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public R<Employee> getById(@PathVariable Long id){
+        Employee employee = employeeService.getById(id);
+        //如果存在该员工
+        if (employee != null){
+            //返回结果
+            return R.success(employee);
+        }
+        return R.error("没有找到该员工");
+    }
+
 }
