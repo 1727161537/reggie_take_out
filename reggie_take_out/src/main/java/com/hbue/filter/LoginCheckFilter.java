@@ -2,6 +2,7 @@ package com.hbue.filter;
 
 
 import com.alibaba.fastjson.JSON;
+import com.hbue.common.BaseContext;
 import com.hbue.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
@@ -44,6 +45,9 @@ public class LoginCheckFilter implements Filter {
         //如果不是直接放行的路径,则需要先判断是否处于登录
         if (request.getSession().getAttribute("employee") != null) {
             log.info("用户已登录,用户id为:{}", request.getSession().getAttribute("employee"));
+            //将用户的id存在在ThreadLocal中
+            Long employeeId = (Long) request.getSession().getAttribute("employee");
+            BaseContext.setCurrentId(employeeId);
             //放行
             filterChain.doFilter(request, response);
             return;
