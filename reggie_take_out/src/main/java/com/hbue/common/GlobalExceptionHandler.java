@@ -40,4 +40,14 @@ public class GlobalExceptionHandler {
     }
 
 
+    /**
+     * 业务异常处理
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(CustomException.class)
+    public R<String> customExceptionHandler(CustomException exception){
+        return R.error(exception.getMessage());
+    }
+
 }
