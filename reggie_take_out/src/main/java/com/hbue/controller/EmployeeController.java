@@ -55,7 +55,6 @@ public class EmployeeController {
         //登录成功,将员工的id存入session并返回登录成功结果
         HttpSession session = request.getSession();
         session.setAttribute("employee", emp.getId());
-        session.setMaxInactiveInterval(1000 * 60 * 60);
         return R.success(emp);
     }
 
