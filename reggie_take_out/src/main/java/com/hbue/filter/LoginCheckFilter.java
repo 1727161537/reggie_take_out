@@ -35,7 +35,9 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 //临时添加
                 "/common/upload",
-                "/common/download"
+                "/common/download",
+                "/user/sendMsg",
+                "/user/login"
         };
         //判断本次的请求是否需要处理
         boolean flag = check(urls, uri);
@@ -55,6 +57,16 @@ public class LoginCheckFilter implements Filter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        //判断登录状态,如果已经登录,则放行
+        if (request.getSession().getAttribute("user") != null){
+            Long userId = (Long) request.getSession().getAttribute("user");
+            //将用户的id存入到线程中
+            BaseContext.setCurrentId(userId);
+            filterChain.doFilter(request,response);
+            return;
+        }
+
         //如果用户没有登录,通过输入流的方式向页面输出数据
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
         return;
